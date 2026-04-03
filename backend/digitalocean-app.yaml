@@ -1,0 +1,45 @@
+# DigitalOcean App Platform — FastAPI backend only (frontend stays on Vercel).
+#
+# How to use:
+# 1. Replace `github.repo` below with your GitHub org/repo (e.g. myteam/persona).
+# 2. In DO: Apps → Create → GitHub → pick repo, OR use "Upload app spec" and paste this file.
+# 3. After deploy, open the app's URL → set Vercel VITE_API_BASE_URL to that origin (no trailing slash).
+# 4. In DO App → Settings → App-Level Environment Variables, add:
+#    CLERK_ISSUER, CLERK_JWKS_URL, HUGGINGFACE_API_TOKEN (and any others from .env.example).
+#
+# Droplet alternative: Ubuntu + `git clone` + venv + systemd running the same uvicorn command
+# on 0.0.0.0:8080 behind Nginx, or use Docker on the droplet if you prefer.
+
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+
+features:
+  - buildpack-stack=ubuntu-22
+
+ingress:
+  rules:
+    - component:
+        name: api
+      match:
+        path:
+          prefix: /
+
+name: personashield-api
+
+region: nyc
+
+services:
+  - name: api
+    environment_slug: python
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+    http_port: 8080
+    instance_count: 1
+    # Change size in the DO UI if this slug is unavailable in your account.
+    instance_size_slug: basic-xxs
+    source_dir: backend
+    build_command: pip install -r requirements.txt
+    run_command: uvicorn main:app --host 0.0.0.0 --port 8080

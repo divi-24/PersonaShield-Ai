@@ -1,32 +1,17 @@
 import logging
 from pathlib import Path
-from typing import Any, Optional
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Lazy-load DeepFace (pulls TensorFlow) so Render can bind $PORT before ML init finishes.
-_deepface_represent: Optional[Any] = None
-_deepface_checked = False
+DEEPFACE_AVAILABLE = False
+try:
+    from deepface import DeepFace
 
-
-def _lazy_deepface_represent():
-    """Return DeepFace.represent callable, or None if unavailable. Imports on first use only."""
-    global _deepface_represent, _deepface_checked
-    if _deepface_checked:
-        return _deepface_represent
-    _deepface_checked = True
-    try:
-        from deepface import DeepFace
-
-        _deepface_represent = DeepFace.represent
-        logger.info("DeepFace loaded for face embeddings")
-    except ImportError as exc:
-        logger.warning("DeepFace not available – using lightweight fallback for face embeddings (%s)", exc)
-        _deepface_represent = None
-    return _deepface_represent
-
+    DEEPFACE_AVAILABLE = True
+except ImportError:
+    logger.warning("DeepFace not installed – using lightweight fallback for face embeddings")
 
 PIL_AVAILABLE = False
 try:
@@ -51,10 +36,9 @@ def _fallback_embedding(image_path: str) -> np.ndarray:
 
 def extract_embedding(image_path: str) -> np.ndarray:
     """Extract a 512-d face embedding from an image file."""
-    represent = _lazy_deepface_represent()
-    if represent is not None:
+    if DEEPFACE_AVAILABLE:
         try:
-            representations = represent(
+            representations = DeepFace.represent(
                 img_path=image_path,
                 model_name="Facenet512",
                 enforce_detection=False,

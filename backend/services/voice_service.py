@@ -1,54 +1,40 @@
 import logging
 from pathlib import Path
-from typing import Any, Callable, Optional, Tuple
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
-# Lazy-load Resemblyzer (PyTorch) and librosa so the HTTP server can bind before heavy ML loads.
-_resemblyzer: Optional[Tuple[Any, Callable]] = None  # (VoiceEncoder instance, preprocess_wav)
-_resemblyzer_checked = False
-_librosa_module: Optional[Any] = None
-_librosa_checked = False
+RESEMBLYZER_AVAILABLE = False
+try:
+    from resemblyzer import VoiceEncoder, preprocess_wav
+
+    RESEMBLYZER_AVAILABLE = True
+    _encoder: VoiceEncoder | None = None
+except ImportError:
+    logger.warning("Resemblyzer not installed – using lightweight fallback for voice embeddings")
+
+LIBROSA_AVAILABLE = False
+try:
+    import librosa  # noqa: F401
+
+    LIBROSA_AVAILABLE = True
+except ImportError:
+    pass
 
 
-def _lazy_resemblyzer():
-    """Return (encoder_instance, preprocess_wav) or None. Imports on first use only."""
-    global _resemblyzer, _resemblyzer_checked
-    if _resemblyzer_checked:
-        return _resemblyzer
-    _resemblyzer_checked = True
-    try:
-        from resemblyzer import VoiceEncoder, preprocess_wav
-
-        encoder = VoiceEncoder()
-        _resemblyzer = (encoder, preprocess_wav)
-        logger.info("Resemblyzer loaded for voice embeddings")
-    except ImportError as exc:
-        logger.warning("Resemblyzer not available – using lightweight fallback for voice embeddings (%s)", exc)
-        _resemblyzer = None
-    return _resemblyzer
-
-
-def _lazy_librosa():
-    global _librosa_module, _librosa_checked
-    if _librosa_checked:
-        return _librosa_module
-    _librosa_checked = True
-    try:
-        import librosa
-
-        _librosa_module = librosa
-    except ImportError:
-        _librosa_module = None
-    return _librosa_module
+def _get_encoder() -> "VoiceEncoder":
+    global _encoder
+    if _encoder is None:
+        _encoder = VoiceEncoder()
+    return _encoder
 
 
 def _fallback_embedding(audio_path: str) -> np.ndarray:
     """Generate a deterministic pseudo-embedding from audio data."""
-    librosa = _lazy_librosa()
-    if librosa is not None:
+    if LIBROSA_AVAILABLE:
+        import librosa
+
         try:
             y, _ = librosa.load(audio_path, sr=16000, mono=True, duration=10)
             seed = int(np.abs(y).sum() * 1000) % (2**31)
@@ -64,10 +50,9 @@ def _fallback_embedding(audio_path: str) -> np.ndarray:
 
 def extract_embedding(audio_path: str) -> np.ndarray:
     """Extract a 256-d voice embedding from an audio file."""
-    pack = _lazy_resemblyzer()
-    if pack is not None:
-        encoder, preprocess_wav = pack
+    if RESEMBLYZER_AVAILABLE:
         try:
+            encoder = _get_encoder()
             wav = preprocess_wav(audio_path)
             embedding = encoder.embed_utterance(wav)
             return embedding.astype(np.float32)
