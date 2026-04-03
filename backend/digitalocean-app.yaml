@@ -10,9 +10,8 @@
 # Droplet alternative: Ubuntu + `git clone` + venv + systemd running the same uvicorn command
 # on 0.0.0.0:8080 behind Nginx, or use Docker on the droplet if you prefer.
 #
-# Build: Docker (backend/Dockerfile) avoids Heroku buildpack "no space left on device" on large
-# TensorFlow/DeepFace layers. If you must use buildpacks, try:
-#   build_command: PIP_NO_CACHE_DIR=1 pip install --no-cache-dir -r requirements.txt
+# Build: backend/Dockerfile uses requirements-docker.txt (no TensorFlow/webrtcvad) so DO builders
+# don’t hit disk/RAM limits. Full stack locally: pip install -r requirements.txt
 
 alerts:
   - rule: DEPLOYMENT_FAILED
