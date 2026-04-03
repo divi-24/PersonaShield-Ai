@@ -1,0 +1,101 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji';
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background-color: rgba(34, 211, 238, 0.25);
+    color: #f8fafc;
+  }
+}
+
+/* AI SaaS product shell: grid + mesh */
+.ps-grid {
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    56px 56px;
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -30%, rgba(34, 211, 238, 0.1), transparent),
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(139, 92, 246, 0.12), transparent),
+    linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+  background-color: #030712;
+}
+
+.ps-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.065;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20256%20256%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22n%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.85%22%20numOctaves%3D%224%22%20stitchTiles%3D%22stitch%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url(%23n)%22%20opacity%3D%221%22%2F%3E%3C%2Fsvg%3E");
+  background-size: 256px 256px;
+}
+
+@keyframes ps-aurora {
+  0% {
+    transform: translate3d(-6%, -8%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 8%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-6%, -8%, 0) scale(1);
+  }
+}
+
+.ps-aurora {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  filter: blur(64px);
+  opacity: 0.75;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(34, 211, 238, 0.20), transparent 55%),
+    radial-gradient(circle at 75% 35%, rgba(167, 139, 250, 0.22), transparent 52%),
+    radial-gradient(circle at 55% 70%, rgba(192, 132, 252, 0.16), transparent 55%);
+  animation: ps-aurora 18s ease-in-out infinite;
+}
+
+.ps-landing-hero {
+  background-image:
+    radial-gradient(ellipse 100% 60% at 50% -20%, rgba(34, 211, 238, 0.2), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 10%, rgba(139, 92, 246, 0.18), transparent),
+    linear-gradient(180deg, #030712 0%, #0f172a 45%, #030712 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 40%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-gradient-accent {
+  background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+}

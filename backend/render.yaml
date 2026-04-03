@@ -1,0 +1,21 @@
+# Render Blueprint — Python API (frontend on Vercel).
+# Render’s Git integration looks for `render.yaml` at the repository root. Either:
+# - copy this file to ../render.yaml from the repo root, or
+# - symlink: ln -s backend/render.yaml render.yaml
+# Or create a Web Service with Root Directory = `backend` and use the build/start commands below.
+services:
+  - type: web
+    name: personashield-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: CLERK_ISSUER
+        sync: false
+      - key: CLERK_JWKS_URL
+        sync: false
+      - key: HUGGINGFACE_API_TOKEN
+        sync: false

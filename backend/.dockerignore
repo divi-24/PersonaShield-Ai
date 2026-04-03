@@ -1,0 +1,11 @@
+# Docker build context when using backend/ as the context root.
+.git
+.venv
+venv
+__pycache__
+*.py[cod]
+.env
+.env.*
+storage
+reports/*.pdf
+*.db

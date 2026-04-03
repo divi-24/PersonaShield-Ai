@@ -1,0 +1,13 @@
+{
+  "transaction_id": "f89edc36dfa64b49948ba8d4e2d9a44d",
+  "generated_at": "2026-04-03T19:54:21.826879+00:00",
+  "user_id": "user_3BqYkGtE2j8m3Jyd7qpIsHfPTji",
+  "listing_id": "lst-nova-voice",
+  "buyer_name": "Demo Buyer",
+  "buyer_email": "buyer@demo.com",
+  "platform": "Instagram",
+  "intended_use": "UGC brand ad with explicit consent and audit log.",
+  "reference_url": null,
+  "amount_inr": 1499.0,
+  "status": "paid"
+}

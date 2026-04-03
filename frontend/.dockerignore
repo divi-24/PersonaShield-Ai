@@ -1,0 +1,6 @@
+# Optional Docker build context for the Vite app (most teams use Vercel without Docker).
+node_modules
+dist
+.env
+.env.*
+*.log
